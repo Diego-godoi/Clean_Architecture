@@ -1,7 +1,6 @@
 package com.diego.cleanArch.infra.persistence.repository;
 
 import com.diego.cleanArch.core.domain.User;
-import com.diego.cleanArch.core.domain.exceptions.DomainException;
 import com.diego.cleanArch.core.ports.UserRepository;
 import com.diego.cleanArch.infra.persistence.entity.UserJpaEntity;
 import com.diego.cleanArch.infra.persistence.spring.SpringDataUserRepository;
@@ -31,11 +30,10 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public boolean delete(UUID id) {
-       Optional<UserJpaEntity> existing = springRepo.findById(id);
-       if ( existing.isEmpty()){
-           throw new DomainException("User not found");
+       if ( !springRepo.existsById(id)){
+          return false;
        }
-       springRepo.delete(existing.get());
+       springRepo.deleteById(id);
        return true;
     }
 

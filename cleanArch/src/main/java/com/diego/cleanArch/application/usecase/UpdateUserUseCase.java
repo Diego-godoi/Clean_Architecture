@@ -4,7 +4,6 @@ import com.diego.cleanArch.core.domain.User;
 import com.diego.cleanArch.core.domain.exceptions.DomainException;
 import com.diego.cleanArch.core.ports.UserRepository;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public class UpdateUserUseCase {
@@ -18,9 +17,9 @@ public class UpdateUserUseCase {
         User user = userRepository.findById(input.id())
                 .orElseThrow(() -> new DomainException("User not found"));
 
-        user.setName(input.name);
-        user.setEmail(input.email);
-        user.setPassword(input.password);
+        user.changeName(input.name);
+        user.changeEmail(input.email);
+        user.changePassword(input.password);
 
         User saved = userRepository.save(user);
 
