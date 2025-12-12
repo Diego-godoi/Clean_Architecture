@@ -1,10 +1,10 @@
 ## 📦 Clean Architecture — Java + Spring Boot
 
-Este projeto foi desenvolvido com o objetivo de estudar e aplicar os princípios da **Clean Architecture**, organizando o código em camadas independentes e garantindo fácil manutenção, escalabilidade e testabilidade.
+This project was developed to study and apply **Clean Architecture**, organizing code in independent layers for maintainability, scalability, and testability.
 
 ---
 
-## 🏗 Tecnologias utilizadas
+## 🏗 Technologies Used
 
 * **Java 21 (JDK 21)**
 * **Spring Boot**
@@ -16,25 +16,25 @@ Este projeto foi desenvolvido com o objetivo de estudar e aplicar os princípios
 
 ---
 
-## 📁 Estrutura do Projeto
+## 📁 Project Structure
 
 ```
-src/
- ├─ application/      → Casos de uso (regras de aplicação)
- ├─ core/           → Entidades e regras de negócio
- ├─ infra/   →  repositórios, config, persistence
- └─ adapter -> Controllers
+com.diego.cleanArch/
+ ├─ application/    → Use cases (application rules)
+ ├─ core/           → Entities, business rules, exceptions, and ports
+ ├─ infra/          → Config, Persistence, Repository
+ └─ adapter         → Controllers, DTOs, handlers
 ```
 
-* O **core** é totalmente independente de framework.
-* O **application** contém regras específicas de aplicação.
-* O **infra** contém detalhes externos (Spring, banco, etc).
+* The **core** is independent of frameworks.
+* The **application** contains application-specific rules.
+* The **infra** layer contains external details (Spring, database, etc.).
 
 ---
 
-# ▶ Como rodar o projeto
+# ▶ How to Run the Project
 
-## 1️⃣ Clonar o repositório
+## 1️⃣ Clone the repository
 
 ```sh
 git clone https://github.com/Diego-godoi/Clean_Architecture.git
@@ -43,67 +43,105 @@ cd Clean_Architecture
 
 ---
 
-## 2️⃣ Criar arquivo `.env`
+## 2️⃣ Create the `.env` file
 
-Crie um arquivo **.env** na raiz do projeto com o seguinte modelo:
+Create a **.env** file in the project root with your database configuration:
 
 ```env
-POSTGRES_DB=
-POSTGRES_USER=
-POSTGRES_PASSWORD=
-POSTGRES_PORT=
-POSTGRES_HOST=
+POSTGRES_DB=cleanArch
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=password
+POSTGRES_PORT=5432
+POSTGRES_HOST=localhost
+PORT=8080
 ```
 
-A aplicação já está configurada para carregar essas variáveis automaticamente.
+> These environment variables are automatically loaded by Docker and Spring Boot.
 
 ---
 
-# ▶ Rodando a API
+# ▶ Running with Docker
 
-## 3️⃣ Instalar dependências
+You can run **PostgreSQL and the API** together using Docker and Docker Compose.
 
-```sh
-mvn clean install -DskipTests
-```
-
-## 4️⃣ Executar
+## 3️⃣ Build and start everything
 
 ```sh
-mvn spring-boot:run
+docker-compose up --build
 ```
 
-A API iniciará em:
+This will:
+
+1. Build the API image.
+2. Start a PostgreSQL container configured with your `.env`.
+3. Start the API container and wait for Postgres to be healthy before launching.
+
+> **Note:** If you previously ran Postgres containers, remove old volumes to ensure the database is recreated correctly:
+
+```sh
+docker-compose down
+docker volume rm cleanarch_postgres_data
+```
+
+---
+
+## 4️⃣ Access the API
+
+Once everything is up, the API will be available at:
 
 ```
 http://localhost:8080
 ```
 
+### Example endpoint:
+
+```
+http://localhost:8080/users
+```
+
+---
+
+# ▶ Running Without Docker
+
+If you want to run the API locally:
+
+1. Install dependencies:
+
+```sh
+mvn clean install -DskipTests
+```
+
+2. Start the application:
+
+```sh
+mvn spring-boot:run
+```
+
+> Make sure PostgreSQL is running locally and the `.env` values match your database.
+
 ---
 
 # 📡 Endpoints
 
-Teste na rota principal: **http://localhost:8080/users**
-Ainda **não há documentação Swagger** no projeto.
-Você pode testar os endpoints usando:
+Use tools like:
 
 * Postman
 * Thunder Client
-* cURL
 * Insomnia
+* cURL
 
-Se quiser, posso adicionar Swagger no seu projeto depois.
-
----
-
-# 🤝 Contribuição
-
-Sinta-se à vontade para abrir PR ou issues com sugestões e melhorias.
+Swagger is not configured yet (can be added later).
 
 ---
 
-# 📄 Licença
+# 🤝 Contribution
 
-Este projeto está sob a licença MIT.
+Feel free to open PRs or issues with suggestions or improvements.
+
+---
+
+# 📄 License
+
+MIT License
 
 ---
