@@ -37,7 +37,7 @@ public class User {
     }
 
     public void changeName(String newName){
-        this.email = validateName(newName);
+        this.name = validateName(newName);
     }
 
     public void changePassword(String newPassword){
