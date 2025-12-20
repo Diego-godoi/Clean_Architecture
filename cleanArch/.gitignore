@@ -37,11 +37,6 @@ build/
 .gitignore
 .gitattributes
 
-# Docker
-Dockerfile
-docker-compose.yml
-.dockerignore
-
 # Logs
 *.log
 logs/
