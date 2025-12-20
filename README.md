@@ -40,17 +40,17 @@ com.diego.cleanArch/
 Pull and run the pre-built image:
 
 ```bash
-docker pull diegos01/cleanarch-api:latest
+docker pull diegos01/clean-arch-api:latest
 
 docker run -d \
-  --name cleanarch-api \
+  --name clean-arch-api \
   -e POSTGRES_HOST=your-postgres-host \
   -e POSTGRES_PORT=5432 \
   -e POSTGRES_DB=cleanArch \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=yourpassword \
   -p 8080:8080 \
-  diegos01/cleanarch-api:latest
+  diegos01/clean-arch-api:latest
 ```
 
 ### Option 2: Using Docker Compose
@@ -174,20 +174,20 @@ curl -X DELETE http://localhost:8080/users/{uuid}
 
 The API is available as a public Docker image:
 
-**Image:** [`diegos01/cleanarch-api:latest`](https://hub.docker.com/r/diegos01/cleanarch-api)
+**Image:** [`diegos01/clean-arch-api:latest`](https://hub.docker.com/r/diegos01/clean-arch-api)
 
 **Pull the image:**
 ```bash
-docker pull diegos01/cleanarch-api:latest
+docker pull diegos01/clean-arch-api:latest
 ```
 
 **Build and push your own version:**
 ```bash
 # Build the image
-docker build -t diegos01/cleanarch-api:latest .
+docker build -t diegos01/clean-arch-api:latest .
 
 # Push to Docker Hub
-docker push diegos01/cleanarch-api:latest
+docker push diegos01/clean-arch-api:latest
 ```
 
 ---
@@ -253,7 +253,7 @@ To add more origins, edit `CorsConfig.java`.
 docker ps | grep postgres
 
 # View API logs
-docker logs cleanarch-api
+docker logs clean-arch-api
 
 # Restart the API
 docker-compose restart api
