@@ -10,6 +10,9 @@ COPY pom.xml .
 COPY .mvn .mvn
 COPY mvnw .
 
+# Corrige permissão do mvnw
+RUN chmod +x mvnw
+
 # Baixa dependências (cache)
 RUN ./mvnw dependency:go-offline -B
 
