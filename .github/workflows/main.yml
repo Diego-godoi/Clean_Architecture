@@ -3,12 +3,12 @@ name: Deploy Java Application
 on:
   push:
     branches:
-    - main
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -20,17 +20,16 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Install dependecies
+      - name: Install Dependencies
         run: mvn clean install -DskipTests
-        working-directory: cleanArch
-        
+
   deploy:
     runs-on: ubuntu-latest
-    needs: build 
+    needs: build
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-        
+
       - name: Docker Login
         uses: docker/login-action@v3.6.0
         with:
@@ -40,9 +39,7 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
-          context: ./cleanArch
+          context: .
           file: Dockerfile
           push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/clean-arch-api:latest
-        
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/clean-arch-api:latest

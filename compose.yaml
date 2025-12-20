@@ -28,7 +28,7 @@ services:
   # ========================================
   api:
     build:
-      context: .
+      context: cleanArch
       dockerfile: Dockerfile
     container_name: cleanArch_api
     restart: unless-stopped
