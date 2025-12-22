@@ -1,0 +1,175 @@
+############################
+# Java & Spring Boot
+############################
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+*.log
+
+# Package Files
+*.jar
+!gradle-wrapper.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# Build directories
+target/
+build/
+bin/
+out/
+!**/src/main/**/target/
+!**/src/test/**/target/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+############################
+# Maven
+############################
+.mvn/
+mvnw
+mvnw.cmd
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+############################
+# Gradle
+############################
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+############################
+# Spring Boot
+############################
+spring-boot-starter-parent/
+HELP.md
+
+############################
+# IDEs
+############################
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+.idea_modules/
+
+# Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+*.launch
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# VS Code
+.vscode/
+*.code-workspace
+.history/
+
+############################
+# Logs
+############################
+logs/
+*.log
+log/
+*.log.*
+*.log.gz
+
+############################
+# Temporary Files
+############################
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+############################
+# Sistema Operacional
+############################
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+############################
+# Arquivos Sensíveis
+############################
+
+# Nunca commitar credenciais!
+application-local.properties
+application-local.yml
+application-secrets.properties
+application-secrets.yml
+.env
+.env.local
+*.pem
+*.key
+*.p12
+*.jks
+
+
+############################
+# Database
+############################
+*.db
+*.sqlite
+*.sqlite3
+/data/
+h2/
+
+############################
+# Docker
+############################
+docker-compose.override.yml
+.dockerignore
+
+############################
+# Outros
+############################
+*.bak
+*.orig
+*.rej
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover

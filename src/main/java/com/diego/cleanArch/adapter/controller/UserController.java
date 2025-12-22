@@ -7,9 +7,16 @@ import com.diego.cleanArch.application.usecase.CreateUserUseCase;
 import com.diego.cleanArch.application.usecase.DeleteUserUseCase;
 import com.diego.cleanArch.application.usecase.FindAllUserUseCase;
 import com.diego.cleanArch.application.usecase.UpdateUserUseCase;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +24,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping ("/users")
+@Tag(name = "Users", description = "User management operations")
 public class UserController {
     private final CreateUserUseCase createUserUseCase;
     private final UpdateUserUseCase updateUserUseCase;
@@ -31,6 +39,27 @@ public class UserController {
     }
 
     @PostMapping
+    @Operation(
+            summary = "Create a new user",
+            description = "Creates a new user with unique email address"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "User created successfully",
+                    content = @Content(schema = @Schema(implementation = UserResponse.class))
+            )
+//            @ApiResponse(
+//                    responseCode = "400",
+//                    description = "Invalid input data",
+//                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+//            ),
+//            @ApiResponse(
+//                    responseCode = "409",
+//                    description = "Email already exists",
+//                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+//            )
+    })
     public ResponseEntity<UserResponse> create(@Valid @RequestBody CreateUserRequest request){
         var input = new CreateUserUseCase.Input(request.name(), request.email(), request.password());
         var output = createUserUseCase.execute(input);
