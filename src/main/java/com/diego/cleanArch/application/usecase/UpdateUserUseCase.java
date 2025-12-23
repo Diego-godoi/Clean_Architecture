@@ -1,7 +1,8 @@
 package com.diego.cleanArch.application.usecase;
 
 import com.diego.cleanArch.core.domain.User;
-import com.diego.cleanArch.core.domain.exceptions.DomainException;
+import com.diego.cleanArch.core.domain.exceptions.ResourceAlreadyExistsException;
+import com.diego.cleanArch.core.domain.exceptions.ResourceNotFoundException;
 import com.diego.cleanArch.core.ports.UserRepository;
 
 import java.util.UUID;
@@ -13,9 +14,17 @@ public class UpdateUserUseCase {
         this.userRepository = userRepository;
     }
 
-    public Output execute(Input input){
+    public Output execute(Input input) {
         User user = userRepository.findById(input.id())
-                .orElseThrow(() -> new DomainException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", input.id()));
+
+        if (!user.getEmail().equals(input.email())) {
+            userRepository.findByEmail(input.email()).ifPresent(existingUser -> {
+                if (!existingUser.getId().equals(input.id())) {
+                    throw new ResourceAlreadyExistsException("User", "Email", input.email());
+                }
+            });
+        }
 
         user.changeName(input.name);
         user.changeEmail(input.email);
@@ -26,6 +35,9 @@ public class UpdateUserUseCase {
         return new Output(saved.getId(), saved.getName(), saved.getEmail());
     }
 
-    public record Input(UUID id, String name, String email, String password){}
-    public record Output(UUID id, String name, String email){}
+    public record Input(UUID id, String name, String email, String password) {
+    }
+
+    public record Output(UUID id, String name, String email) {
+    }
 }

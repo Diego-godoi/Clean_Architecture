@@ -1,6 +1,5 @@
 package com.diego.cleanArch.adapter.handler;
 
-import com.diego.cleanArch.core.domain.exceptions.DomainException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +11,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import com.diego.cleanArch.core.domain.exceptions.InvalidDomainDataException;
+import com.diego.cleanArch.core.domain.exceptions.ResourceAlreadyExistsException;
+import com.diego.cleanArch.core.domain.exceptions.ResourceNotFoundException;
+
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,9 +25,70 @@ public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(DomainException.class)
-    public ResponseEntity<ErrorResponse> handleDomainException(DomainException ex, HttpServletRequest request){
-        logger.warn("Domain exception: {} - Path: {}", ex.getMessage(), request.getRequestURI());
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex,
+            HttpServletRequest request) {
+
+        logger.warn("Resource not found: {} - Path: {}", ex.getMessage(), request.getRequestURI());
+
+        ErrorResponse error = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.NOT_FOUND.value())
+                .error(HttpStatus.NOT_FOUND.getReasonPhrase())
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .details(Map.of(
+                        "resourceType", ex.getResourceType(),
+                        "identifier", ex.getIdentifier().toString()))
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleResourceAlreadyExistsException(ResourceAlreadyExistsException ex,
+            HttpServletRequest request) {
+
+        logger.warn("Resource conflict: {} - Path: {}", ex.getMessage(), request.getRequestURI());
+
+        ErrorResponse error = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.CONFLICT.value())
+                .error(HttpStatus.CONFLICT.getReasonPhrase())
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .details(Map.of(
+                        "resourceType", ex.getResourceType(),
+                        "conflictField", ex.getConflictField(),
+                        "conflictValue", ex.getConflictValue().toString()))
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    };
+
+    @ExceptionHandler(InvalidDomainDataException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidDomainData(InvalidDomainDataException ex,
+            HttpServletRequest request) {
+
+        logger.warn("Invalid domain data: {} - Path: {}", ex.getMessage(), request.getRequestURI());
+
+        ErrorResponse error = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .details(Map.of("field", ex.getField()))
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex,
+            HttpServletRequest request) {
+        logger.warn("Illegal argument: {} - Path: {}", ex.getMessage(), request.getRequestURI());
+
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -32,17 +96,20 @@ public class GlobalExceptionHandler {
                 .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .build();
+
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(error);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationErrorResponse> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
+    public ResponseEntity<ValidationErrorResponse> handleValidationException(
+            MethodArgumentNotValidException ex,
+            HttpServletRequest request) {
+
         logger.warn("Validation failed for request: {}", request.getRequestURI());
 
         Map<String, String> errors = new HashMap<>();
-
         ex.getBindingResult().getAllErrors().forEach(error -> {
             String field = ((FieldError) error).getField();
             String message = error.getDefaultMessage();
@@ -58,14 +125,20 @@ public class GlobalExceptionHandler {
                 .fieldErrors(errors)
                 .build();
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(errorResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request){
-        logger.warn("Type mismatch for parameter '{}: {} - Path: {}", ex.getName(), ex.getValue(), request.getRequestURI());
-        String message = String.format("Invalid value '%s' for parameter '%s'", ex.getValue(), ex.getName());
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(
+            MethodArgumentTypeMismatchException ex,
+            HttpServletRequest request) {
+
+        logger.warn("Type mismatch for parameter '{}': {} - Path: {}",
+                ex.getName(), ex.getValue(), request.getRequestURI());
+
+        String message = String.format("Invalid value '%s' for parameter '%s'",
+                ex.getValue(), ex.getName());
+
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -73,38 +146,22 @@ public class GlobalExceptionHandler {
                 .message(message)
                 .path(request.getRequestURI())
                 .build();
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(error);
-    }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request){
-        logger.warn("Illegal argument: {} - Path: {}", ex.getMessage(), request.getRequestURI());
-        ErrorResponse error = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                .message(ex.getMessage())
-                .path(request.getRequestURI())
-                .build();
-
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(error);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException( Exception ex, HttpServletRequest request){
+    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
         String errorId = UUID.randomUUID().toString();
 
-        logger.error("Unexpected error [ID: {}] - Path: {} - Exception: {}", errorId, request.getRequestURI(), ex.getClass().getName(), ex);
+        logger.error("Unexpected error [ID: {}] - Path: {} - Exception: {}", errorId, request.getRequestURI(),
+                ex.getClass().getName(), ex);
 
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-                .message("An unexpected error occured. Please contact support with error ID: "+ errorId)
+                .message("An unexpected error occured. Please contact support with error ID: " + errorId)
                 .path(request.getRequestURI())
                 .traceId(errorId)
                 .build();
@@ -115,15 +172,14 @@ public class GlobalExceptionHandler {
 
     }
 
-
     public record ErrorResponse(
             LocalDateTime timestamp,
             int status,
             String error,
             String message,
             String path,
-            String traceId
-    ) {
+            String traceId,
+            Map<String, String> details) {
         public static Builder builder() {
             return new Builder();
         }
@@ -135,6 +191,7 @@ public class GlobalExceptionHandler {
             private String message;
             private String path;
             private String traceId;
+            private Map<String, String> details;
 
             public Builder timestamp(LocalDateTime timestamp) {
                 this.timestamp = timestamp;
@@ -166,12 +223,16 @@ public class GlobalExceptionHandler {
                 return this;
             }
 
+            public Builder details(Map<String, String> details) {
+                this.details = details;
+                return this;
+            }
+
             public ErrorResponse build() {
-                return new ErrorResponse(timestamp, status, error, message, path, traceId);
+                return new ErrorResponse(timestamp, status, error, message, path, traceId, details);
             }
         }
     }
-
 
     public record ValidationErrorResponse(
             LocalDateTime timestamp,
@@ -179,8 +240,7 @@ public class GlobalExceptionHandler {
             String error,
             String message,
             String path,
-            Map<String, String> fieldErrors
-    ) {
+            Map<String, String> fieldErrors) {
         public static Builder builder() {
             return new Builder();
         }

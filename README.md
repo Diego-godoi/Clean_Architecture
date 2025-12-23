@@ -11,6 +11,7 @@ A RESTful API built with **Clean Architecture** principles, providing user manag
 * **Maven**
 * **PostgreSQL 16**
 * **Docker & Docker Compose**
+* **Swagger/OpenAPI 3.0** for API documentation
 * **Clean Architecture Pattern**
 
 ---
@@ -120,18 +121,49 @@ PORT=8080
 
 ---
 
+## 📚 API Documentation (Swagger)
+
+The API includes **interactive documentation** powered by Swagger/OpenAPI 3.0.
+
+### Accessing Swagger UI
+
+Once the application is running, access the documentation at:
+
+**Swagger UI:** `http://localhost:8080/swagger-ui/index.html`
+
+**OpenAPI JSON:** `http://localhost:8080/v3/api-docs`
+
+### Features
+
+✅ **Interactive testing** - Try all endpoints directly from the browser  
+✅ **Request/Response examples** - See exactly what data to send and expect  
+✅ **Schema documentation** - Complete data models and validation rules  
+✅ **Error responses** - All possible HTTP status codes documented (400, 404, 409, etc.)  
+✅ **No authentication required** - Perfect for development and testing
+
+### What's Documented
+
+All endpoints include:
+- **Operation summary** and detailed descriptions
+- **Request body schemas** with validation rules
+- **Response codes:** 200, 201, 204, 400, 404, 409
+- **Error response models** for exception handling
+- **Parameter descriptions** for path variables and query params
+
+---
+
 ## 📡 API Endpoints
 
 Once running, the API will be available at `http://localhost:8080`
 
 ### User Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/users` | Create a new user |
-| `GET` | `/users` | Get all users |
-| `PUT` | `/users` | Update a user |
-| `DELETE` | `/users/{id}` | Delete a user by ID |
+| Method | Endpoint | Description | Status Codes |
+|--------|----------|-------------|--------------|
+| `POST` | `/users` | Create a new user | 201, 400, 409 |
+| `GET` | `/users` | Get all users | 200 |
+| `PUT` | `/users` | Update a user | 200, 400, 404 |
+| `DELETE` | `/users/{id}` | Delete a user by ID | 204, 404 |
 
 ### Example Requests
 
@@ -146,9 +178,29 @@ curl -X POST http://localhost:8080/users \
   }'
 ```
 
+**Response (201 Created):**
+```json
+{
+  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "name": "John Doe",
+  "email": "john@example.com"
+}
+```
+
 **Get All Users:**
 ```bash
 curl http://localhost:8080/users
+```
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "John Doe",
+    "email": "john@example.com"
+  }
+]
 ```
 
 **Update User:**
@@ -156,7 +208,7 @@ curl http://localhost:8080/users
 curl -X PUT http://localhost:8080/users \
   -H "Content-Type: application/json" \
   -d '{
-    "id": "uuid-here",
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     "name": "John Updated",
     "email": "john.new@example.com",
     "password": "newpass123"
@@ -165,8 +217,10 @@ curl -X PUT http://localhost:8080/users \
 
 **Delete User:**
 ```bash
-curl -X DELETE http://localhost:8080/users/{uuid}
+curl -X DELETE http://localhost:8080/users/a1b2c3d4-e5f6-7890-abcd-ef1234567890
 ```
+
+**Response (204 No Content)**
 
 ---
 
@@ -221,7 +275,7 @@ docker push diegos01/clean-arch-api:latest
 - `FindAllUserUseCase.java` - Retrieves all users
 
 **Adapter Layer (External Interface):**
-- `UserController.java` - REST API endpoints
+- `UserController.java` - REST API endpoints with Swagger annotations
 - `GlobalExceptionHandler.java` - Centralized error handling
 - DTOs for request/response mapping
 
@@ -229,6 +283,8 @@ docker push diegos01/clean-arch-api:latest
 - `UserRepositoryImpl.java` - Concrete repository implementation
 - `SpringDataUserRepository.java` - Spring Data JPA interface
 - `UserJpaEntity.java` - JPA entity for persistence
+- `SwaggerConfig.java` - API documentation configuration
+- `CorsConfig.java` - Cross-Origin Resource Sharing setup
 - Configuration classes for dependency injection
 
 ---
@@ -268,6 +324,15 @@ PORT=8081
 docker-compose up -d
 ```
 
+**Swagger UI not loading:**
+```bash
+# Verify the application is running
+curl http://localhost:8080/actuator/health
+
+# Access Swagger at the correct URL
+http://localhost:8080/swagger-ui/index.html
+```
+
 ---
 
 ## 🤝 Contributing
@@ -298,13 +363,15 @@ This project is licensed under the MIT License.
 
 ## 🎯 Roadmap
 
-- [ ] Add Swagger/OpenAPI documentation
+- [x] ~~Add Swagger/OpenAPI documentation~~ ✅ **Done!**
+- [x] ~~Set up CI/CD pipeline~~ ✅ **Done!**
 - [ ] Implement authentication (JWT)
 - [ ] Add unit and integration tests
-- [ ] Set up CI/CD pipeline
 - [ ] Add Docker multi-stage builds
 - [ ] Implement caching with Redis
 - [ ] Add monitoring and health checks
+- [ ] Add pagination for GET /users endpoint
+- [ ] Implement request/response logging
 
 ---
 
