@@ -105,4 +105,48 @@ public class UserTest {
 
         assertEquals("Invalid email format", exception.getMessage());
     }
+
+    @Test
+    void shouldChangeNameSuccessfully() {
+        User user = new User(null, "Old name", "pass123", "user@example.com");
+
+        String newName = "new name";
+
+        user.changeName(newName);
+
+        assertNotNull(user.getName());
+        assertEquals(newName, user.getName());
+    }
+
+    @Test
+    void shouldChangePasswordSuccessfully() {
+        User user = new User(null, "John Joe", "oldPass123", "user@example.com");
+
+        String newPassword = "newPass123";
+
+        user.changePassword(newPassword);
+
+        assertNotNull(user.getPassword());
+        assertEquals(newPassword, user.getPassword());
+    }
+
+    @Test
+    void shouldChangeEmailSuccessfully() {
+        User user = new User(null, "John Joe", "pass123", "oldEmail@example.com");
+
+        String newEmail = "new@example.com";
+
+        user.changeEmail(newEmail);
+
+        assertNotNull(user.getEmail());
+        assertEquals(newEmail, user.getEmail());
+    }
+
+    @Test
+    void shouldMaintainIdImmutability() {
+        UUID userId = UUID.randomUUID();
+        User user = new User(userId, "John Joe", "pass123", "john@example.com");
+
+        assertEquals(userId, user.getId());
+    }
 }
