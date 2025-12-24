@@ -365,8 +365,8 @@ This project is licensed under the MIT License.
 
 - [x] ~~Add Swagger/OpenAPI documentation~~ ✅ **Done!**
 - [x] ~~Set up CI/CD pipeline~~ ✅ **Done!**
+- [x] ~~Add unit and integration tests~~ ✅ **Done!**
 - [ ] Implement authentication (JWT)
-- [ ] Add unit and integration tests
 - [ ] Add Docker multi-stage builds
 - [ ] Implement caching with Redis
 - [ ] Add monitoring and health checks
